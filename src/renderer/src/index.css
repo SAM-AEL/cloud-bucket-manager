@@ -1,0 +1,198 @@
+@import 'tailwindcss';
+
+/*
+ * Class-based dark mode so the user can pick a theme without the OS changing.
+ * The `dark` class is toggled on <html> by the theme store.
+ */
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  /*
+   * Neutral grey ramp. Chroma is deliberately ~0.002–0.004 so the surfaces
+   * read as true greys rather than a blue-tinted "dark mode" grey. Hue stays
+   * constant so the ramp stays perceptually even as lightness steps.
+   */
+  --color-canvas: oklch(0.145 0.003 90);
+  --color-surface: oklch(0.183 0.003 90);
+  --color-raised: oklch(0.222 0.003 90);
+  --color-overlay: oklch(0.268 0.003 90);
+  --color-hover: oklch(0.305 0.003 90);
+
+  --color-line: oklch(1 0 0 / 0.07);
+  --color-line-strong: oklch(1 0 0 / 0.13);
+
+  --color-ink: oklch(0.96 0.001 90);
+  --color-ink-muted: oklch(0.71 0.002 90);
+  --color-ink-faint: oklch(0.55 0.002 90);
+
+  /* Warm-tinted accent so it sits naturally against neutral greys. */
+  --color-brand: oklch(0.74 0.11 70);
+  --color-brand-strong: oklch(0.81 0.11 70);
+  --color-brand-dim: oklch(0.74 0.11 70 / 0.14);
+  --color-brand-ink: oklch(0.18 0.01 70);
+
+  --color-positive: oklch(0.76 0.13 150);
+  --color-caution: oklch(0.82 0.13 85);
+  --color-danger: oklch(0.68 0.17 25);
+  --color-danger-dim: oklch(0.68 0.17 25 / 0.15);
+
+  /* System font stack: no network fetch, works under a strict CSP. */
+  --font-sans: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: ui-monospace, 'SF Mono', 'JetBrains Mono', Menlo, Consolas, monospace;
+
+  --radius-card: 0.875rem;
+  --radius-panel: 1rem;
+
+  --ease-out-quint: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  --animate-shimmer: shimmer 1.5s linear infinite;
+  --animate-fade-in: fade-in 0.18s var(--ease-out-quint);
+  --animate-rise: rise 0.22s var(--ease-out-quint);
+
+  @keyframes shimmer {
+    from {
+      background-position: 200% 0;
+    }
+    to {
+      background-position: -200% 0;
+    }
+  }
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  @keyframes rise {
+    from {
+      opacity: 0;
+      transform: translateY(4px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+}
+
+@layer base {
+  :root {
+    color-scheme: dark;
+  }
+
+  html.dark {
+    color-scheme: dark;
+  }
+  html.light {
+    color-scheme: light;
+  }
+
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
+
+  body {
+    @apply bg-canvas text-ink font-sans antialiased;
+    margin: 0;
+    /* The window is a fixed-size desktop surface; nothing should rubber-band. */
+    overflow: hidden;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* Light theme flips the ramp rather than swapping a second stylesheet. */
+  html.light {
+    --color-canvas: oklch(0.972 0.002 90);
+    --color-surface: oklch(1 0 0);
+    --color-raised: oklch(0.962 0.002 90);
+    --color-overlay: oklch(0.935 0.003 90);
+    --color-hover: oklch(0.905 0.003 90);
+
+    --color-line: oklch(0.2 0.002 90 / 0.1);
+    --color-line-strong: oklch(0.2 0.002 90 / 0.18);
+
+    --color-ink: oklch(0.24 0.002 90);
+    --color-ink-muted: oklch(0.46 0.002 90);
+    --color-ink-faint: oklch(0.6 0.002 90);
+
+    --color-brand: oklch(0.58 0.12 60);
+    --color-brand-strong: oklch(0.5 0.12 60);
+    --color-brand-dim: oklch(0.58 0.12 60 / 0.1);
+    --color-brand-ink: oklch(0.99 0.002 60);
+  }
+
+  /* Slim, unobtrusive scrollbars that follow the theme. */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-line-strong) transparent;
+  }
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background-color: var(--color-line-strong);
+    border-radius: 999px;
+    border: 3px solid transparent;
+    background-clip: content-box;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background-color: var(--color-ink-faint);
+  }
+
+  :focus-visible {
+    @apply outline-2 outline-offset-2 outline-brand;
+  }
+}
+
+@layer components {
+  /*
+   * Density switch. Both modes are roomier than the previous build: the
+   * comfortable default leaves generous vertical rhythm in list rows, and
+   * compact still stays readable rather than becoming cramped.
+   */
+  [data-density='compact'] {
+    --row-height: 2.25rem;
+  }
+  [data-density='comfortable'] {
+    --row-height: 3rem;
+  }
+
+  .panel {
+    @apply bg-surface border-line rounded-panel border;
+  }
+
+  /* Row shell shared by the object list, sidebar and transfer tray. */
+  .row {
+    @apply flex items-center rounded-lg transition-colors duration-150;
+  }
+
+  .shimmer {
+    background-image: linear-gradient(
+      90deg,
+      var(--color-raised) 0%,
+      var(--color-overlay) 50%,
+      var(--color-raised) 100%
+    );
+    background-size: 200% 100%;
+    animation: var(--animate-shimmer);
+  }
+}
+
+/* Respect the OS reduced-motion setting across every animation we add. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}

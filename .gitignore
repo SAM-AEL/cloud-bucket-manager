@@ -1,0 +1,33 @@
+node_modules/
+out/
+dist/
+release/
+coverage/
+*.log
+.DS_Store
+.vite/
+tsconfig.*.tsbuildinfo
+.env
+.env.local
+
+# Yarn install cache
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
+
+# AI, Editor & Local Agent Caches
+.commandcode/
+.agents/
+.artemis/
+.gemini/
+.claude/
+.cursor/
+.cline/
+.codex/
+.grok/
+.openclaw/
+.opencode/
+*.taste
+*.taste.*

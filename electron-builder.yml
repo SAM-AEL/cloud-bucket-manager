@@ -1,0 +1,70 @@
+appId: dev.r2manager.app
+productName: R2 Manager
+copyright: Copyright © 2026
+
+directories:
+  buildResources: build
+  output: release
+
+files:
+  - out/**/*
+  - package.json
+  - '!**/.vscode/*'
+  - '!src/*'
+  - '!tests/*'
+  - '!electron.vite.config.*'
+  - '!vitest.config.*'
+  - '!{.eslintrc,.prettierrc,tsconfig.json,tsconfig.*.json}'
+
+asar: true
+# The AWS SDK is pure JS but large; unpack it so startup is not slowed by
+# asar random-access reads.
+asarUnpack:
+  - '**/node_modules/@aws-sdk/**'
+
+# Never ship source maps or dev tooling to end users.
+npmRebuild: false
+
+mac:
+  category: public.app-category.developer-tools
+  target:
+    - dmg
+    - zip
+  darkModeSupport: true
+  # Set CSC_LINK / CSC_KEY_PASSWORD (or APPLE_ID + APPLE_APP_SPECIFIC_PASSWORD +
+  # APPLE_TEAM_ID) in CI to enable notarization.
+  notarize: false
+
+dmg:
+  contents:
+    - x: 130
+      y: 220
+      type: file
+    - x: 410
+      y: 220
+      type: link
+      path: /Applications
+
+win:
+  target:
+    - nsis
+    - portable
+
+nsis:
+  oneClick: false
+  allowToChangeInstallationDirectory: true
+  perMachine: false
+
+linux:
+  category: Development
+  target:
+    - AppImage
+    - deb
+    - rpm
+
+# Add a `repository` field to package.json and uncomment the block below to
+# publish releases to GitHub.
+#
+# publish:
+#   provider: github
+#   releaseType: release
